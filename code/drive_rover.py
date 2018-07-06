@@ -182,6 +182,7 @@ def send_pickup():
         pickup,
         skip_sid=True)
     eventlet.sleep(0)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Remote Driving')
     parser.add_argument(
