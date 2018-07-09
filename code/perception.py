@@ -88,12 +88,12 @@ def perspect_transform(img, src, dst):
     
     return warped, mask
 
+def angle_close_to_zero(angle, epsilon = 0.5):
+    return abs(angle) < epsilon or abs(360 - angle) < epsilon
 
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(Rover):
     # Perform perception steps to update Rover()
-    # TODO: 
-    # NOTE: camera image is coming to you in Rover.img
     # 1) Define source and destination points for perspective transform
     image = Rover.img
     bottom_offset = 6
@@ -135,13 +135,16 @@ def perception_step(Rover):
     navigable_x_world, navigable_y_world = pix_to_world(navigable_xpix, navigable_ypix,
                                                         xpos, ypos, yaw, world_size, scale)
     rock_x_world, rock_y_world = pix_to_world(rock_xpix, rock_ypix,xpos, ypos, yaw, world_size, scale)
+
+    # only accomdate mapping to when pitch and roll are small enough
+    if angle_close_to_zero(Rover.roll) and angle_close_to_zero(Rover.pitch):
     # 7) Update Rover worldmap (to be displayed on right side of screen)
         # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
-    Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] = 255
+        Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] = 255
         #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
-    Rover.worldmap[rock_y_world, rock_x_world, :] = 255
+        Rover.worldmap[rock_y_world, rock_x_world, :] = 255
         #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
-    Rover.worldmap[navigable_y_world, navigable_x_world, 2] = 255
+        Rover.worldmap[navigable_y_world, navigable_x_world, 2] = 255
 
     # 8) Convert rover-centric pixel positions to polar coordinates
     # Update Rover pixel distances and angles
